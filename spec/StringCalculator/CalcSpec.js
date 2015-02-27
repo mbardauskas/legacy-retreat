@@ -14,7 +14,7 @@ describe("StringCalculator", function() {
   });
 
   it("should work with non-comma delimiters", function() {
-    expect("//;\n1;2".calc()).toEqual(3)
+    expect("//;\n1;2".calc()).toEqual(3);
   });
 
   it("should ignore numbers bigger than 1000", function() {
