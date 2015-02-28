@@ -60,12 +60,20 @@ describe("Game", function() {
 	var game;
 
 	beforeEach(function() {
-		game = new Game();
+		var logger = function() {
+			if (global.lines) {
+				global.lines.push(arguments);
+			}
+		}
+		game = new Game(logger);
+		global.lines = [];
+		game.logger = null;
 		capture.start();
 	});
 
 	afterEach(function() {
 		capture.stop();
+		global.lines = null;
 		game = null;
 	});
 
