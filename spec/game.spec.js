@@ -1,5 +1,21 @@
+Math.random = (function() {
+	var seed = 0x2F6E2B1;
+	return function() {
+// Robert Jenkins’ 32 bit integer hash function
+		seed = ((seed + 0x7ED55D16) + (seed << 12)) & 0xFFFFFFFF;
+		seed = ((seed ^ 0xC761C23C) ^ (seed >>> 19)) & 0xFFFFFFFF;
+		seed = ((seed + 0x165667B1) + (seed << 5)) & 0xFFFFFFFF;
+		seed = ((seed + 0xD3A2646C) ^ (seed << 9)) & 0xFFFFFFFF;
+		seed = ((seed + 0xFD7046C5) + (seed << 3)) & 0xFFFFFFFF;
+		seed = ((seed ^ 0xB55A4F09) ^ (seed >>> 16)) & 0xFFFFFFFF;
+		return (seed & 0xFFFFFFF) / 0x10000000;
+	};
+}());
+
 require('./../lib/game.js');
+var fs = require('fs');
 var assert = require('assert');
+
 var capture = {
 	get: function() {
 		return global.lines.map(function(args) {
@@ -11,6 +27,21 @@ var capture = {
 	},
 	stop: function() {
 		global.lines = null;
+	}
+};
+
+var fileWrapper = {
+	write: function(file, input) {
+		fs.writeFile(file, input, function(err) {
+			if(err) {
+				console.log(err);
+			} else {
+				console.log("The file was saved!");
+			}
+		});
+	},
+	read: function(file, callback) {
+		fs.readFile(file, 'utf8', callback);
 	}
 };
 
@@ -34,8 +65,31 @@ describe("Game", function() {
 	});
 
 	afterEach(function() {
-		capture.stop()
+		capture.stop();
 		game = null;
+	});
+
+	describe("play", function() {
+		it("golden master output matches current output", function() {
+			// prep
+			var gameRunner = new GameRunner();
+
+			// act
+			var iteration = 0;
+			while(iteration < 10) {
+				var random = Math.random();
+				gameRunner.play(random);
+				iteration++;
+			}
+
+			// verify
+			fileWrapper.read('./game-output.txt', function(err, data) {
+				if(err) {
+					console.log(err);
+				}
+				assert.equal(data, capture.get());
+			});
+		});
 	});
 
   it("can be created", function() {
@@ -69,7 +123,6 @@ describe("Game", function() {
 			// act
 			game.roll();
 
-			console.log(capture.get());
 			// verify
 			assert.equal(capture.get(), "undefined is the current player\nThey have rolled a undefined\nundefined's new location is NaN\nThe category is Rock\nRock Question 0");
 		});
