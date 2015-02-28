@@ -17,16 +17,17 @@ var fs = require('fs');
 var assert = require('assert');
 
 var capture = {
+	printedLines: null,
 	get: function() {
-		return global.lines.map(function(args) {
+		return this.printedLines.map(function(args) {
 			return [].slice.call(args).join('');
 		}).join('\n');
 	},
 	start: function() {
-		global.lines = [];
+		this.printedLines = [];
 	},
 	stop: function() {
-		global.lines = null;
+		this.printedLines = null;
 	}
 };
 
