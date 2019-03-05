@@ -2,7 +2,7 @@
   "name": "katas",
   "version": "0.0.0",
   "dependencies": {
-    "lodash": "~3.3.1"
+    "lodash": "~4.17.11"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
